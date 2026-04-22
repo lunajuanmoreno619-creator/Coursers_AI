@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curso IA & LLMs — Del Cero al Experto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #09090f;
+      --bg2:       #0f0f1a;
+      --bg3:       #14142a;
+      --surface:   #1a1a2e;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #e8e8f0;
+      --muted:     #7a7a9a;
+      --accent:    #7c6af7;
+      --accent2:   #4fcfcf;
+      --accent3:   #f7c26a;
+      --green:     #3ddc84;
+      --yellow:    #f7c26a;
+      --orange:    #f0834d;
+      --glow:      rgba(124,106,247,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(9,9,15,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.88rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: .55rem 1.3rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity .2s, transform .2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+      overflow: hidden;
+    }
+
+    /* orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 500px; height: 500px; background: rgba(124,106,247,0.2); top: -100px; left: -150px; animation-delay: 0s; }
+    .orb2 { width: 400px; height: 400px; background: rgba(79,207,207,0.15); bottom: -80px; right: -100px; animation-delay: -5s; }
+    .orb3 { width: 300px; height: 300px; background: rgba(247,194,106,0.1); top: 40%; left: 55%; animation-delay: -3s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.08); }
+    } 50%{opacity:0.3} }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: clamp(5rem, 13vw, 11rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      max-width: 900px;
+      animation: fadeUp .9s ease .1s both;
+    }
+
+    h1 .line2 {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 560px;
+      animation: fadeUp .9s ease .2s both;
+    }
+
+    .hero-actions {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .9s ease .3s both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #5a4fcf);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: .85rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(124,106,247,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 45px rgba(124,106,247,0.45); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      padding: .85rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+
+    .hero-stats {
+      margin-top: 4rem;
+      display: flex;
+      gap: 3.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .9s ease .45s both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      color: var(--text);
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: .78rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-top: .2rem; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION COMMON ── */
+    section { position: relative; z-index: 1; }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .8rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+    }
+
+    .section-sub {
+      margin-top: .8rem;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 540px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* ── LEVELS OVERVIEW ── */
+    #niveles { padding: 7rem 0; }
+
+    .levels-header { margin-bottom: 4rem; }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .level-card {
+      background: var(--bg2);
+      padding: 2rem 1.8rem;
+      transition: background .25s;
+      cursor: default;
+    }
+    .level-card:hover { background: var(--bg3); }
+
+    .level-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-bottom: 1.2rem;
+    }
+    .level-card:nth-child(1) .level-dot { background: var(--green); box-shadow: 0 0 10px var(--green); }
+    .level-card:nth-child(2) .level-dot { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+
+    .level-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: .3rem;
+    }
+    .level-desc { font-size: .85rem; color: var(--muted); }
+    .level-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      color: var(--muted);
+      background: var(--surface);
+      padding: .25rem .65rem;
+      border-radius: 100px;
+    }
+
+    /* ── MODULES ── */
+    #modulos { padding: 7rem 0; background: var(--bg2); }
+
+    .modules-header { margin-bottom: 4rem; }
+
+    .module-block {
+      margin-bottom: 3.5rem;
+    }
+
+    .module-level-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .25rem .8rem;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .tag-green  { background: rgba(61,220,132,0.1);  color: var(--green);  border: 1px solid rgba(61,220,132,0.25); }
+    .tag-yellow { background: rgba(247,194,106,0.1); color: var(--yellow); border: 1px solid rgba(247,194,106,0.25); }
+
+    .modules-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .module-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.8rem;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .module-card.green::before  { background: var(--green); }
+    .module-card.yellow::before { background: var(--yellow); }
+    .module-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+    .module-card:hover::before { opacity: 1; }
+
+    .module-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: .6rem;
+    }
+    .module-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: .8rem;
+      line-height: 1.25;
+    }
+    .module-topics {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+    .module-topics li {
+      font-size: .82rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+    .module-topics li::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+
+    .module-footer {
+      margin-top: 1.2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .tool-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      background: var(--surface);
+      color: var(--muted);
+      padding: .2rem .55rem;
+      border-radius: 4px;
+    }
+
+
+    /* ── COLLAPSIBLE NIVEL 2 ── */
+    .nivel2-toggle {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      user-select: none;
+      padding: 1.2rem 1.5rem;
+      background: rgba(247,194,106,0.06);
+      border: 1px solid rgba(247,194,106,0.2);
+      border-radius: 12px;
+      margin-bottom: 0;
+      transition: background .2s;
+    }
+    .nivel2-toggle:hover { background: rgba(247,194,106,0.1); }
+    .nivel2-toggle .toggle-arrow {
+      margin-left: auto;
+      font-size: 1.1rem;
+      transition: transform .3s ease;
+      color: var(--yellow);
+    }
+    .nivel2-toggle.open .toggle-arrow { transform: rotate(180deg); }
+    .nivel2-toggle .toggle-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--yellow);
+    }
+    .nivel2-toggle .toggle-sub {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .nivel2-content {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .5s ease, opacity .4s ease, margin-top .3s ease;
+      opacity: 0;
+      margin-top: 0;
+    }
+    .nivel2-content.open {
+      max-height: 4000px;
+      opacity: 1;
+      margin-top: 1.5rem;
+    }
+    .module-block.nivel2 { margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border); }
+
+    /* ── TOOLS SECTION ── */
+    #herramientas { padding: 7rem 0; }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .tool-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem 1.2rem;
+      text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .tool-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+    .tool-icon { font-size: 2rem; margin-bottom: .6rem; }
+    .tool-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: .9rem; margin-bottom: .25rem; }
+    .tool-type { font-size: .72rem; color: var(--muted); }
+
+    /* ── WHAT YOU LEARN ── */
+    #aprende { padding: 7rem 0; background: var(--bg2); }
+
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 900px) { .outcomes-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px) { .outcomes-grid { grid-template-columns: 1fr; } }
+
+    .outcome-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2.4rem 1.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      gap: 1rem;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .outcome-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .outcome-item.g::after { background: var(--green); }
+    .outcome-item.y::after { background: var(--yellow); }
+    .outcome-item:hover { border-color: rgba(255,255,255,0.13); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
+    .outcome-item:hover::after { opacity: 1; }
+
+    .outcome-emoji {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+    .outcome-headline {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.2;
+      color: var(--text);
+    }
+    .outcome-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .2rem .65rem;
+      border-radius: 100px;
+    }
+    .outcome-tag.g { background: rgba(61,220,132,0.1); color: var(--green); border: 1px solid rgba(61,220,132,0.2); }
+    .outcome-tag.y { background: rgba(247,194,106,0.1); color: var(--yellow); border: 1px solid rgba(247,194,106,0.2); }
+
+    /* ── CTA ── */
+    #contacto {
+      padding: 7rem 0;
+      text-align: center;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(124,106,247,0.12), rgba(79,207,207,0.08));
+      border: 1px solid rgba(124,106,247,0.2);
+      border-radius: 24px;
+      padding: 5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(124,106,247,0.25), transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .cta-box p { color: var(--muted); font-size: 1rem; max-width: 460px; margin: 0 auto 2.5rem; }
+
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    footer p { font-size: .82rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .82rem; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero-stats { gap: 2rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">IA<span>.</span>curso</div>
+    <ul class="nav-links">
+      <li><a href="#niveles">Niveles</a></li>
+      <li><a href="#modulos">Módulos</a></li>
+      <li><a href="#herramientas">Herramientas</a></li>
+      <li><a href="#aprende">Qué aprenderás</a></li>
+    </ul>
+    <a href="https://wa.me/524792237945" target="_blank" class="nav-cta" style="background:#25d366">💬 WhatsApp</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <h1>
+      Domina la<br>
+      <span class="line2">Inteligencia Artificial</span><br>
+      desde cero
+    </h1>
+
+    <p class="hero-sub">
+      De usuario general a automatizador técnico. Dos niveles progresivos,
+      herramientas reales, práctica desde el primer día.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#modulos" class="btn-primary">Ver el programa</a>
+      <a href="#contacto" class="btn-ghost">Quiero inscribirme</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">6<span>+</span></div>
+        <div class="stat-label">Módulos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">16<span>h</span></div>
+        <div class="stat-label">de contenido</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">30<span>+</span></div>
+        <div class="stat-label">Prácticas</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- NIVELES -->
+  <section id="niveles">
+    <div class="section-inner">
+      <div class="levels-header reveal">
+        <div class="section-label">Estructura del curso</div>
+        <h2 class="section-title">Dos niveles,<br>un camino claro</h2>
+        <p class="section-sub">Cada nivel construye sobre el anterior. Puedes entrar en cualquier punto según tu experiencia.</p>
+      </div>
+
+      <div class="levels-grid reveal">
+        <div class="level-card">
+          <div class="level-dot"></div>
+          <div class="level-name">Nivel 1 — Fundamentos</div>
+          <div class="level-desc">Para cualquier persona. Sin tecnicismos, sin código. Aprende a usar IA en tu vida diaria desde la primera sesión.</div>
+          <span class="level-tag">6–8 horas · 3 módulos</span>
+        </div>
+        <div class="level-card">
+          <div class="level-dot"></div>
+          <div class="level-name">Nivel 2 — Técnico</div>
+          <div class="level-desc">Primer paso hacia la automatización. Automatiza tareas, conecta APIs y descubre Gemini CLI y modelos locales con Ollama.</div>
+          <span class="level-tag">8–10 horas · 4 módulos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- MÓDULOS -->
+  <section id="modulos">
+    <div class="section-inner">
+      <div class="modules-header reveal">
+        <div class="section-label">Contenido completo</div>
+        <h2 class="section-title">6 módulos.<br>Teoría + práctica.</h2>
+        <p class="section-sub">Cada módulo termina con ejercicios reales que puedes aplicar el mismo día.</p>
+      </div>
+
+      <!-- NIVEL 1 -->
+      <div class="module-block reveal">
+        <span class="module-level-tag tag-green">🟢 Nivel 1 — Fundamentos</span>
+        <div class="modules-row">
+
+          <div class="module-card green">
+            <div class="module-num">Módulo 01</div>
+            <div class="module-title">Introducción Práctica a la IA</div>
+            <ul class="module-topics">
+              <li>Qué es la IA (sin tecnicismos)</li>
+              <li>Qué puede y qué no puede hacer</li>
+              <li>Mitos y realidades más comunes</li>
+              <li>Primer contacto con ChatGPT y Gemini</li>
+              <li>Comparar respuestas entre herramientas</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">ChatGPT</span>
+              <span class="tool-chip">Gemini</span>
+            </div>
+          </div>
+
+          <div class="module-card green">
+            <div class="module-num">Módulo 02</div>
+            <div class="module-title">IA para la Vida Diaria</div>
+            <ul class="module-topics">
+              <li>IA en el trabajo: redacción y correos</li>
+              <li>IA en el estudio: resúmenes y flashcards</li>
+              <li>IA para uso personal: planes e ideas</li>
+              <li>Casos reales con ahorro de tiempo</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">ChatGPT</span>
+              <span class="tool-chip">Gemini</span>
+              <span class="tool-chip">Notion AI</span>
+            </div>
+          </div>
+
+          <div class="module-card green">
+            <div class="module-num">Módulo 03</div>
+            <div class="module-title">Uso Inteligente: Prompts</div>
+            <ul class="module-topics">
+              <li>Anatomía de un buen prompt</li>
+              <li>Técnicas: rol, ejemplos, restricciones</li>
+              <li>Errores comunes y cómo evitarlos</li>
+              <li>Pedir formatos: tablas, JSON, listas</li>
+              <li>Iterar y mejorar resultados</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">ChatGPT</span>
+              <span class="tool-chip">Gemini</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- NIVEL 2 -->
+      <div class="module-block nivel2 reveal">
+        <div class="nivel2-toggle" onclick="toggleNivel2(this)">
+          <div>
+            <div class="toggle-title">🟡 Nivel 2 — Iniciación Técnica</div>
+            <div class="toggle-sub">8–10 horas · 5 módulos · Click para expandir</div>
+          </div>
+          <span class="toggle-arrow">▼</span>
+        </div>
+        <div class="nivel2-content" id="nivel2-content">
+        <div class="modules-row" style="margin-top:0">
+
+          <div class="module-card yellow">
+            <div class="module-num">Módulo 04</div>
+            <div class="module-title">Automatización Básica</div>
+            <ul class="module-topics">
+              <li>Flujo: Input → IA → Output</li>
+              <li>Introducción a Zapier y Make</li>
+              <li>Lógica condicional: si esto, entonces aquello</li>
+              <li>Respuestas automáticas a correos</li>
+              <li>Tu primer flujo de trabajo de 3 pasos</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">Zapier</span>
+              <span class="tool-chip">Make.com</span>
+            </div>
+          </div>
+
+          <div class="module-card yellow">
+            <div class="module-num">Módulo 05</div>
+            <div class="module-title">APIs e Integración (Sin Código)</div>
+            <ul class="module-topics">
+              <li>Qué es una API, explicado simple</li>
+              <li>OpenAI API desde el Playground</li>
+              <li>Conectar IA con Google Sheets y Gmail</li>
+              <li>Webhooks básicos y su utilidad</li>
+              <li>Seguridad y buenas prácticas</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">OpenAI</span>
+              <span class="tool-chip">Google Sheets</span>
+              <span class="tool-chip">Notion</span>
+            </div>
+          </div>
+
+          <div class="module-card yellow">
+            <div class="module-num">Módulo 05B</div>
+            <div class="module-title">Gemini CLI: IA desde la Terminal</div>
+            <ul class="module-topics">
+              <li>Instalación y configuración paso a paso</li>
+              <li>Comandos esenciales: chat, generate, summarize</li>
+              <li>Usar Gemini CLI en scripts bash/zsh</li>
+              <li>Analizar archivos y PDFs desde terminal</li>
+              <li>Bot de terminal que responde un PDF</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">Gemini CLI</span>
+              <span class="tool-chip">Google AI Studio</span>
+              <span class="tool-chip">Terminal</span>
+            </div>
+          </div>
+
+          <div class="module-card yellow">
+            <div class="module-num">Módulo 05C</div>
+            <div class="module-title">Ollama: Modelos Locales</div>
+            <ul class="module-topics">
+              <li>Instalación en Windows, macOS y Linux</li>
+              <li>Creación de usuario y configuración inicial</li>
+              <li>Descargar modelos: LLaMA 3, Mistral, Gemma</li>
+              <li>Comandos: ollama run, pull, list</li>
+              <li>Llamar Ollama desde Python (API local)</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">Ollama</span>
+              <span class="tool-chip">LLaMA 3</span>
+              <span class="tool-chip">Mistral</span>
+              <span class="tool-chip">Gemma</span>
+            </div>
+          </div>
+
+          <div class="module-card yellow">
+            <div class="module-num">Módulo 06</div>
+            <div class="module-title">Introducción a Python para IA</div>
+            <ul class="module-topics">
+              <li>Variables, funciones y bucles básicos</li>
+              <li>Librerías: openai, requests</li>
+              <li>Tu primer script: llamar a ChatGPT</li>
+              <li>Procesar listas de textos con un bucle</li>
+              <li>Guardar resultados en archivos .txt</li>
+            </ul>
+            <div class="module-footer">
+              <span class="tool-chip">Python 3</span>
+              <span class="tool-chip">Google Colab</span>
+              <span class="tool-chip">openai lib</span>
+            </div>
+          </div>
+
+        </div>
+        </div><!-- /nivel2-content -->
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HERRAMIENTAS -->
+  <section id="herramientas">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-label">Stack del curso</div>
+        <h2 class="section-title">Herramientas reales,<br>usadas hoy en la industria</h2>
+      </div>
+      <div class="tools-grid reveal">
+        <div class="tool-card"><div class="tool-icon">🤖</div><div class="tool-name">ChatGPT</div><div class="tool-type">Chatbot IA</div></div>
+        <div class="tool-card"><div class="tool-icon">💠</div><div class="tool-name">Gemini</div><div class="tool-type">Google AI</div></div>
+        <div class="tool-card"><div class="tool-icon">⌨️</div><div class="tool-name">Gemini CLI</div><div class="tool-type">Terminal</div></div>
+        <div class="tool-card"><div class="tool-icon">🦙</div><div class="tool-name">Ollama</div><div class="tool-type">Modelos locales</div></div>
+        <div class="tool-card"><div class="tool-icon">⚡</div><div class="tool-name">Zapier</div><div class="tool-type">Automatización</div></div>
+        <div class="tool-card"><div class="tool-icon">🔗</div><div class="tool-name">Make.com</div><div class="tool-type">Flujos no-code</div></div>
+        <div class="tool-card"><div class="tool-icon">🐍</div><div class="tool-name">Python</div><div class="tool-type">Programación</div></div>
+        <div class="tool-card"><div class="tool-icon">☁️</div><div class="tool-name">Google Colab</div><div class="tool-type">Sin instalación</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- QUÉ APRENDERÁS -->
+  <section id="aprende">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-label">Resultados</div>
+        <h2 class="section-title">Al terminar el programa</h2>
+        <p class="section-sub">Habilidades concretas que puedes aplicar desde el primer día.</p>
+      </div>
+      <div class="outcomes-grid reveal">
+
+        <div class="outcome-item g">
+          <div class="outcome-emoji">⚡</div>
+          <div class="outcome-headline">Productividad<br>inmediata</div>
+          <span class="outcome-tag g">Nivel 1</span>
+        </div>
+
+        <div class="outcome-item g">
+          <div class="outcome-emoji">🧠</div>
+          <div class="outcome-headline">Comunicación<br>con la IA</div>
+          <span class="outcome-tag g">Nivel 1</span>
+        </div>
+
+        <div class="outcome-item g">
+          <div class="outcome-emoji">🎯</div>
+          <div class="outcome-headline">Prompts que<br>dan resultados</div>
+          <span class="outcome-tag g">Nivel 1</span>
+        </div>
+
+        <div class="outcome-item y">
+          <div class="outcome-emoji">🔄</div>
+          <div class="outcome-headline">Tareas en<br>piloto automático</div>
+          <span class="outcome-tag y">Nivel 2</span>
+        </div>
+
+        <div class="outcome-item y">
+          <div class="outcome-emoji">🦙</div>
+          <div class="outcome-headline">IA que corre<br>en tu propia máquina</div>
+          <span class="outcome-tag y">Nivel 2</span>
+        </div>
+
+        <div class="outcome-item y">
+          <div class="outcome-emoji">🐍</div>
+          <div class="outcome-headline">Tu primer script<br>de IA funcionando</div>
+          <span class="outcome-tag y">Nivel 2</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CTA -->
+  <section id="contacto">
+    <div class="section-inner">
+      <div class="cta-box reveal">
+        <h2>¿Listo para empezar?</h2>
+        <p>Reserva tu lugar en el próximo grupo. Cupos limitados para garantizar atención personalizada.</p>
+        <div class="cta-buttons">
+          <a href="https://wa.me/524792237945" target="_blank" class="btn-primary" style="background:linear-gradient(135deg,#25d366,#128c5e);box-shadow:0 0 30px rgba(37,211,102,0.3)">💬 Escríbeme a WhatsApp →</a>
+          <a href="#modulos" class="btn-ghost">Ver módulos de nuevo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 IA.curso — Todos los derechos reservados</p>
+    <div class="footer-links">
+      <a href="#niveles">Niveles</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </footer>
+
+  <script>
+    function toggleNivel2(btn) {
+      const content = document.getElementById('nivel2-content');
+      btn.classList.toggle('open');
+      content.classList.toggle('open');
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
